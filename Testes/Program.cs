@@ -197,37 +197,44 @@ class Program
             string diaSemana = filaDiasSemana.Dequeue();
             int diaMes = filaDiasMes.Dequeue();
 
-            // Verifica se existem horários para esta data (específicos ou padrão)
-            bool temHorariosEspecificos = horariosPorData.ContainsKey(diaMes) && horariosPorData[diaMes].Count > 0;
-            bool temHorariosPadrao = horariosPadraoPorDia[diaSemana].Count > 0;
+            Dictionary<string, int> horariosDia = new Dictionary<string, int>();
+
+            // Adiciona horários padrão
+            if (horariosPadraoPorDia[diaSemana].Count > 0)
+            {
+                foreach (var horario in horariosPadraoPorDia[diaSemana])
+                {
+                    horariosDia[horario.Key] = horario.Value;
+                }
+            }
+
+            // Adiciona horários específicos (substituindo padrões se houver conflito)
+            if (horariosPorData.ContainsKey(diaMes))
+            {
+                foreach (var horario in horariosPorData[diaMes])
+                {
+                    horariosDia[horario.Key] = horario.Value;
+                }
+            }
 
             // Mostra apenas dias com horários
-            if (temHorariosEspecificos || temHorariosPadrao)
+            if (horariosDia.Count > 0)
             {
                 Console.WriteLine($" {diaSemana}, dia {diaMes}");
 
-                // Prioriza horários específicos se existirem
-                if (temHorariosEspecificos)
+                foreach (var horario in horariosDia)
                 {
-                    foreach (var horario in horariosPorData[diaMes])
-                    {
-                        Console.WriteLine($" {horario.Key} - {horario.Value} vagas");
-                    }
-                }
-                else
-                {
-                    foreach (var horario in horariosPadraoPorDia[diaSemana])
-                    {
-                        Console.WriteLine($" {horario.Key} - {horario.Value} vagas");
-                    }
+                    Console.WriteLine($" {horario.Key} - {horario.Value} vagas");
                 }
 
                 Console.WriteLine("----------------------");
             }
 
             filaDiasSemana.Enqueue(diaSemana);
-
-            CreateTestMessage3();
+            
+            
+            
+            //CreateTestMessage3();
         }
     }
 
